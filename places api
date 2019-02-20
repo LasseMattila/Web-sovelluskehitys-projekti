@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> </title>
+<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 800px;
+		width: 800px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    </head>
+    <body>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="lodging" value="lodging" checked />
+    <label for="lodging">Lodging</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="restaurant" value="restaurant" />
+    <label for="restaurant">Restaurant</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="pharmacy" value="pharmacy" />
+    <label for="apotik">Pharmacy</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="ds" value="department_store" />
+    <label for="ds">Department Store</label>
+</div>
+<div id="map"></div>
+<!-- Replace the value of the key parameter with your own API key. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCO3-1UTuTTyP3_rFOtgfEG4hwaLmfCFk&libraries=places&callback=initMap" async defer></script>
+<script>
+var map;
+var center = {
+        lat: 30.42130899999999,
+        lng: -87.2169149
+    };
+var markers = [];
+
+function initMap() {    
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: center,
+        zoom: 15
+    });        
+    callService( map, 'lodging');    
+}
+
+function callback(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+        }
+    }
+}
+
+function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+    });    
+    markers.push(marker);
+}
+
+function callService( map, place) {
+	var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch({
+        location: center,
+        radius: 5000,
+        type: [place]
+    }, callback);
+}
+
+function clearMarker() {
+	for( var i = 0; i < markers.length; i++ ) {
+    	markers[i].setMap(null);
+    }
+}
+
+$( function () {
+
+	$('.place-types :radio').click( function () {    	
+        var plc = $( this ).val();
+        clearMarker();
+        callService( map, plc);
+    });
+    
+});
+
+</script>
+    </body>
+</html>
