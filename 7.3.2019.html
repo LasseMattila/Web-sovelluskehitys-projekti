@@ -2,9 +2,9 @@
 <html>
     
     <head>
-        
+        <meta charset="utf-8">
         <title>Navigointi</title>
-
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
        
       #place-types    {
@@ -24,7 +24,10 @@
         padding: 0;
         text-align: center;
         background-color: black;
-        color: #FFC34D;
+        background: #3D7EAA;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #FFE47A, #3D7EAA);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #FFE47A, #3D7EAA); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
       }
     </style>
     <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -53,6 +56,8 @@
 <form>
   Distance in meters: <input type="number" id="distance" name="distance" min="0" max="10000" step="100">
   <input type="button" onclick="getDistance()" value="Submit">
+        <input onclick="clearMarker();" type=button value="Clear markers" >
+
 </form>
 
 <div id="map"></div>
@@ -65,7 +70,7 @@ var center = {
         lng: 24.7729
     };
 var markers = [];
-var mapDistance = 500;
+var mapDistance = 0;
    function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 60.7385, lng: 24.7729},
@@ -139,9 +144,8 @@ function getDistance() {
   let distance = parseInt(document.getElementById("distance").value);
   mapDistance = distance;
   console.log("we got here");
-  callService(map, 'lodging');
+  callService(map, 'lodging', 'restaurant');
 }
-
 </script>
 <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-3.1.1.min.js"></script>
