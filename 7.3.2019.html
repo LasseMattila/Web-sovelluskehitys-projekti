@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        
+        <title>Navigointi</title>
+
+<style>
+       
+      #place-types    {
+          text-align: center;
+          
+      }
+       
+      #map {
+        height: 850px;
+		width: 1200px;
+	    margin: 0 auto;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        background-color: black;
+        color: #FFC34D;
+      }
+    </style>
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    </head>
+    <body>
+<h1>Welcome to the service!</h1>
+
+<h2>Choose your service and distance:</h2>
+
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="lodging" value="lodging" checked />
+    <label for="lodging">Lodging</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="restaurant" value="restaurant" />
+    <label for="restaurant">Restaurant</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="pharmacy" value="pharmacy" />
+    <label for="apotik">Pharmacy</label>
+</div>
+<div class="place-types">
+    <input class="with-gap" name="type" type="radio" id="ds" value="department_store" />
+    <label for="ds">Department Store</label>
+</div>
+<form>
+  Distance in meters: <input type="number" id="distance" name="distance" min="0" max="10000" step="100">
+  <input type="button" onclick="getDistance()" value="Submit">
+</form>
+
+<div id="map"></div>
+<!-- Replace the value of the key parameter with your own API key. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCO3-1UTuTTyP3_rFOtgfEG4hwaLmfCFk&libraries=places&callback=initMap" async defer></script>
+<script>
+var map, google, infoWindow, navigator;
+var center = {
+        lat: 60.7385,
+        lng: 24.7729
+    };
+var markers = [];
+var mapDistance = 500;
+   function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 60.7385, lng: 24.7729},
+          zoom: 5.4
+          
+        });callService( map, 'lodging');   
+	
+        infoWindow = new google.maps.InfoWindow;
+		
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+			
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Your location.');
+            infoWindow.open(map);
+            
+            map.setCenter(pos);
+			map.setZoom(15);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      }
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+
+ 
+
+function callback(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+        }
+    }
+}
+function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+    });    
+    markers.push(marker);
+}
+function callService( map, place) {
+	var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch({
+        location: center,
+        radius: mapDistance,
+        type: [place]
+    }, callback);
+}
+function clearMarker() {
+	for( var i = 0; i < markers.length; i++ ) {
+    	markers[i].setMap(null);
+    }
+}
+
+function getDistance() {
+  let distance = parseInt(document.getElementById("distance").value);
+  mapDistance = distance;
+  console.log("we got here");
+  callService(map, 'lodging');
+}
+
+</script>
+<script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-3.1.1.min.js"></script>
+<script src="jquery.js"></script>
+
+    </body>
+    
+</html>
